@@ -6,8 +6,6 @@
 #include <Windows.h>
 #include <string.h>
 #include "tetris.h"
-//#include "menu.h"
-#include "user.h"
 
 TETROMINO blocks[] = {
 	{{"##",
@@ -106,7 +104,6 @@ void tetrisPrint(TETRIS* tetris) {
     if (tetris->paused) {
         printf("\t\t    *** [ PAUSE ] ***");
     }
-    //printf("\n");
     printf("\n\t\t");
     for (int x = 0; x < 2 * tetris->width + 4; x++) {
         printf("=");
@@ -133,10 +130,6 @@ void tetrisPrint(TETRIS* tetris) {
     }
     printf("\n");
     printf("\t\tLEVEL: %d\n\t\tSCORE: %d\n", tetris->level, tetris->score);
-    
-    /*if (tetris->exitRequested) {
-        printf("Are you sure you want to exit? (y/n)\n");
-    }*/
 }
 
 int tetrisHittest(TETRIS* tetris) {
@@ -335,8 +328,4 @@ void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs) 
     }
 
     tetrisFree(&tetris);
-}
-
-void runTetrisForUser(USER_MANAGER* um, int userIndex) {
-    tetrisRun(&um->players[userIndex], 10, 20, um->players[userIndex].score);
 }

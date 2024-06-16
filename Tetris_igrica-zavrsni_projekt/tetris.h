@@ -5,8 +5,6 @@
 #define BOARD_WIDTH 10
 #define BOARD_HEIGHT 20
 
-#include "user.h"
-
 typedef struct tetrisBlock {
 	char data[5][5];
 	int width;
@@ -34,6 +32,8 @@ typedef struct tetrisGame {
 
 extern TETROMINO blocks[];
 extern LEVEL levels[];
+
+#include "score.h"
 
 void tetrisInitialization(TETRIS* tetris, const int boardWidth, const int boardHeight);
 void tetrisPrint(TETRIS* tetris);
