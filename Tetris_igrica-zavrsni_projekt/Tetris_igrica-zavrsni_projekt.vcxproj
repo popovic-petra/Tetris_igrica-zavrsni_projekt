@@ -129,11 +129,13 @@
   <ItemGroup>
     <ClCompile Include="main.c" />
     <ClCompile Include="menu.c" />
+    <ClCompile Include="score.c" />
     <ClCompile Include="tetris.c" />
     <ClCompile Include="user.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="menu.h" />
+    <ClInclude Include="score.h" />
     <ClInclude Include="tetris.h" />
     <ClInclude Include="user.h" />
   </ItemGroup>

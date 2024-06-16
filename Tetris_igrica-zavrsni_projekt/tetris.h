@@ -5,6 +5,8 @@
 #define BOARD_WIDTH 10
 #define BOARD_HEIGHT 20
 
+#include "user.h"
+
 typedef struct tetrisBlock {
 	char data[5][5];
 	int width;
@@ -43,6 +45,5 @@ void tetrisGravity(TETRIS* tetris);
 void tetrisFall(TETRIS* tetris, int l);
 void tetrisCheckLines(TETRIS* tetris);
 int tetrisLevel(TETRIS* tetris);
-void tetrisRun(int w, int h);
-void tetris();
 void tetrisFree(TETRIS* tetris);
+void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs);

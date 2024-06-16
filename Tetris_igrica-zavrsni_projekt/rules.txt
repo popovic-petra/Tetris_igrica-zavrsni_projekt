@@ -1,20 +1,18 @@
 
-********************* TETRIS Rules **********************
-*							*
-*							*
-*	Contorls:					*
-*							*
-*	>>> Press 'a' to go left.			*
-*	>>> Press 'd' to go right.			*
-*	>>> Press 's' for faster drop.			*
-*	>>> Press [space] to rotate deg clockwise.	*
-*							*
-*	Scoring:					*
-*							*
-*	>>> 1 row = 100 * level				*
-*	>>> 2 rows = 300 * level			*
-*	>>> 3 rows = 500 * level			*
-*	>>> 4 rows (TETRIS) = 800 * level		*
-*							*
-*							*
-*********************************************************
+****************** TETRIS Rules ******************
+				
+	Contorls:					
+							   
+	>>> Press 'a' to go left.			
+	>>> Press 'd' to go right.			
+	>>> Press 's' for faster drop.			
+	>>> Press [space] to rotate clockwise.	
+							
+	Scoring:					
+						
+	>>> 1 row = 100 * level				
+	>>> 2 rows = 300 * level			
+   	>>> 3 rows = 500 * level			
+   	>>> 4 rows (TETRIS) = 800 * level		
+							
+**************************************************

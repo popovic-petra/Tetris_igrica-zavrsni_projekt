@@ -27,12 +27,21 @@
     <ClCompile Include="user.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="score.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tetris.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="user.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

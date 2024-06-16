@@ -6,7 +6,8 @@
 #include <Windows.h>
 #include <string.h>
 #include "tetris.h"
-#include "menu.h"
+//#include "menu.h"
+#include "user.h"
 
 TETROMINO blocks[] = {
 	{{"##",
@@ -42,23 +43,23 @@ TETROMINO blocks[] = {
 LEVEL levels[] = {
 	{0,
 		800000000},
-	{5000,
+	{2500,
 		716666667},
-	{10000,
+	{5000,
 		633333333},
-	{20000,
+	{10000,
 		550000000},
-	{30000,
+	{15000,
 		466666667},
-	{40000,
+	{20000,
 		383333333},
-	{50000,
+	{30000,
 		300000000},
-	{70000,
+	{40000,
 		216666667},
-	{90000,
+	{50000,
 		133333333},
-	{110000,
+	{70000,
 		100000000},
 };
 
@@ -133,9 +134,9 @@ void tetrisPrint(TETRIS* tetris) {
     printf("\n");
     printf("\t\tLEVEL: %d\n\t\tSCORE: %d\n", tetris->level, tetris->score);
     
-    if (tetris->exitRequested) {
+    /*if (tetris->exitRequested) {
         printf("Are you sure you want to exit? (y/n)\n");
-    }
+    }*/
 }
 
 int tetrisHittest(TETRIS* tetris) {
@@ -267,10 +268,13 @@ int tetrisLevel(TETRIS* tetris) {
     return levels[tetris->level - 1].nsec;
 }
 
-void tetrisRun(int boardWidth, int boardHeight) {
+void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs) {
     TETRIS tetris;
     char cmd;
     int count = 0;
+
+    user->score = 0;
+
     tetrisInitialization(&tetris, boardWidth, boardHeight);
     tetrisNewBlock(&tetris);
 
@@ -288,27 +292,14 @@ void tetrisRun(int boardWidth, int boardHeight) {
         }
         while (_kbhit()) {
             cmd = _getch();
-            if (tetris.exitRequested) {
-                if (cmd == 'y' || cmd == 'Y') {
-                    tetris.gameover = 1;
-                }
-                else if (cmd == 'n' || cmd == 'N') {
-                    tetris.exitRequested = 0;
-                    tetrisPrint(&tetris); // Refresh screen to remove exit prompt
-                }
-                continue;
-            }
-
+            
             if (cmd == 'p') {
                 tetris.paused = !tetris.paused;
                 if (tetris.paused) {
                     tetrisPrint(&tetris);
                 }
             }
-            else if (cmd == 'q') {
-                tetris.exitRequested = 1;
-                tetrisPrint(&tetris); // Display exit confirmation prompt
-            }
+            
             else if (!tetris.paused) {
                 switch (cmd) {
                 case 'a':
@@ -331,12 +322,21 @@ void tetrisRun(int boardWidth, int boardHeight) {
             }
         }
     }
+
+    user->score = tetris.score;
+    printf("GAME OVER %s ! Your score: %d !\n", user->username, user->score);
+    if (user->score > hs) {
+        hs = user->score;
+        printf("CONGRATULATIONS %s ! New high score !\n", user->username);
+        //saveScore();
+    }
+    else {
+        printf("Better luck next time !\n");
+    }
+
     tetrisFree(&tetris);
 }
 
-
-void tetris() {
-    srand((unsigned)time(NULL));
-    tetrisRun(BOARD_WIDTH, BOARD_HEIGHT);
+void runTetrisForUser(USER_MANAGER* um, int userIndex) {
+    tetrisRun(&um->players[userIndex], 10, 20, um->players[userIndex].score);
 }
-
