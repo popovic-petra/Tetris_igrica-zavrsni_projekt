@@ -37,6 +37,7 @@ static void highscoreMenu() {
 
 
 void displayMainMenu() {
+    USER* user = allocateUser();
 
     int showMainMenu = 1;
     
@@ -49,7 +50,9 @@ void displayMainMenu() {
         switch (choice) {
         case START:
             system("cls");
-            // TODO unesi username i zapocni igru
+            enterUsername(user);
+            tetrisRun(user, BOARD_WIDTH, BOARD_HEIGHT, 0);
+            freeUser(user);
             break;
         case RULES:
             system("cls");
@@ -77,13 +80,23 @@ void displayHighscoreMenu() {
 
         switch (choice) {
         case ASCENDING:
-            //displayScoresAscending();
+            system("cls");
+            displayScoresAscending();
             break;
         case DESCENDING:
-            //displayScoresDescending();
+            system("cls");
+            displayScoresDescending();
             break;
         case SEARCH:
-            //searchHighscores();
+            system("cls");
+            USER users[MAX_PLAYERS];
+            int count = 0;
+            loadScores(users, &count);
+
+            char searchName[MAX_USERNAME_LENGTH + 1];
+            getInputUsername(searchName, sizeof(searchName));
+
+            searchUsername(users, count, searchName);
             break;
         case DEL:
             //TODO izbrisi sve scores, prompt y/n
