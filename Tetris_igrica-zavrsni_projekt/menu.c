@@ -6,9 +6,18 @@
 #include "score.h"
 #include "tetris.h"
 
+static void printStars(int count) {
+    for (int i = 0; i < count; i++) {
+        printf("*");
+    }
+    printf("\n");
+}
+
 static void mainMenu() {
-    printf("\n*************** TETRIS Version 1.0 ***************");
-    printf("\n\n\tCreated By: P. Popovic, SR-1.god");
+    printStars(51);
+    printf("*                TETRIS Version 1.0               *\n");
+    printStars(51);
+    printf("\n\tCreated By: P. Popovic, SR-1.god");
     printf("\n\n");
 
     printf("\n\t\t0. Start new game\n");
@@ -17,28 +26,29 @@ static void mainMenu() {
     printf("\n\t\t3. Exit\n");
 
     printf("\n\n");
-    printf("**************************************************\n");
+    printStars(51);
 }
 
 static void highscoreMenu() {
-    printf("\n*************** TETRIS Version 1.0 ***************");
-    printf("\n\n\tCreated By: P. Popovic, SR-1.god");
+    printStars(51);
+    printf("*                TETRIS Version 1.0               *\n");
+    printStars(51);
+    printf("\n\tCreated By: P. Popovic, SR-1.god");
     printf("\n\n");
 
-    printf("\n\t0. View highscores in ascending order\n");
-    printf("\n\t1. View highscores in descending order\n");
-    printf("\n\t2. Search highscores\n");
-    printf("\n\t3. Delete all highscores\n");
-    printf("\n\t4. Back to main menu\n");
+    printf("\n\t0. View highscores\n");
+    printf("\n\t1. Sort highscores in ascending order\n");
+    printf("\n\t2. Sort highscores in descending order\n");
+    printf("\n\t3. Search highscores\n");
+    printf("\n\t4. Delete all highscores\n");
+    printf("\n\t5. Back to main menu\n");
 
     printf("\n\n");
-    printf("**************************************************\n");
+    printStars(51);
 }
 
-
 void displayMainMenu() {
-    USER* user = allocateUser();
-
+    
     int showMainMenu = 1;
     
     while (showMainMenu) {
@@ -50,9 +60,7 @@ void displayMainMenu() {
         switch (choice) {
         case START:
             system("cls");
-            enterUsername(user);
-            tetrisRun(user, BOARD_WIDTH, BOARD_HEIGHT, 0);
-            freeUser(user);
+            tetrisRun(BOARD_WIDTH, BOARD_HEIGHT, 0);
             break;
         case RULES:
             system("cls");
@@ -74,33 +82,110 @@ void displayHighscoreMenu() {
     int showHighscoreMenu = 1;
 
     while (showHighscoreMenu) {
-        
+        system("cls");
         highscoreMenu();
         int choice = getHighscoreMenuOption(BACK);
 
+        USER users[MAX_PLAYERS] = { '\0' };
+        int count = loadScore(users, MAX_PLAYERS);
+
+        char check;
+
         switch (choice) {
+        case VIEW:
+            system("cls");
+            printStars(51);
+            printf("*                   HIGH SCORES                   *\n");
+            printStars(51);
+            printf("\tUSERNAME\t\t\SCORE\n\n");
+            
+            for (int i = 0; i < count; i++) {
+               printf("\t%-16s\t%d\n", users[i].username, users[i].score);
+            }
+            printf("\nPress ENTER to return to previous menu...\n");
+            getchar();
+            getchar();
+            break;
         case ASCENDING:
             system("cls");
-            displayScoresAscending();
+            printStars(51);
+            printf("*                 SORTED ASCENDING                *\n");
+            printStars(51);
+            qsort(users, count, sizeof(USER), compareAsc);
+            printf("\tUSERNAME\t\t\SCORE\n\n");
+            for (int i = 0; i < count; i++) {
+                printf("\t%-16s\t%d\n", users[i].username, users[i].score);
+            }
+            printf("\nPress ENTER to return to previous menu...\n");
+            getchar();
+            getchar();
             break;
+
         case DESCENDING:
             system("cls");
-            displayScoresDescending();
-            break;
+            printStars(51);
+            printf("*                 SORTED DESCENDING               *\n");
+            printStars(51);
+            qsort(users, count, sizeof(USER), compareDesc);
+            printf("\tUSERNAME\t\t\SCORE\n\n");
+            for (int i = 0; i < count; i++) {
+                printf("\t%-16s\t%d\n", users[i].username, users[i].score);
+            }
+            printf("\nPress ENTER to return to previous menu...\n");
+            getchar();
+            getchar();
+
         case SEARCH:
             system("cls");
-            USER users[MAX_PLAYERS];
-            int count = 0;
-            loadScores(users, &count);
-
+            qsort(users, count, sizeof(USER), compareUsernames);
+            
             char searchName[MAX_USERNAME_LENGTH + 1];
-            getInputUsername(searchName, sizeof(searchName));
+            printf("Enter username to search\n>>> ");
+            getchar();
+            fgets(searchName, MAX_USERNAME_LENGTH, stdin);
+            removeNewline(searchName);
 
-            searchUsername(users, count, searchName);
+            USER key;
+            strncpy(key.username, searchName, MAX_USERNAME_LENGTH);
+
+            USER* found = bsearch(&key, users, count, sizeof(USER), compareUsernames);
+            
+            if (found) {
+                system("cls");
+                printStars(51);
+                printf("*                 SEARCH RESULT                   *\n");
+                printStars(51);
+                printf("Found user: %s with score: %d\n", found->username, found->score);
+                printf("\nPress ENTER to return to previous menu...\n");
+                getchar();
+            }
+            else {
+                printStars(51);
+                printf("\nUser %s not found.\n", searchName);
+                printStars(51);
+                printf("\nPress ENTER to return to previous menu...\n");
+                getchar();
+                getchar();
+            }
+
             break;
         case DEL:
-            //TODO izbrisi sve scores, prompt y/n
-            //deleteHighscores();
+            system("cls");
+            check = doubleCheck();
+            getchar();
+            
+            if (check == 'y' || check == 'Y') {
+                deleteHighscores();
+                printf("File was successfully deleted.\n");
+            }
+            else if (check == 'n' || check == 'N') {
+                printf("File clearing was successfully canceled.\n");
+            }
+            else {
+                printf("Invalid input. File clearing canceled.\n");
+            }
+            printf("\nPress ENTER to return to previous menu...\n");
+            getchar();              
             break;
         case BACK:
             showHighscoreMenu = 0;
@@ -121,7 +206,6 @@ int getMenuChoice(int maxOption) {
             printf("Choice out of range. Try again.\n");
         }
     } while (choice < 0 || choice > maxOption);
-
     return choice;
 }
 
@@ -144,15 +228,15 @@ void displayRules() {
         exit(EXIT_FAILURE);
     }
 
-    /*int d = sizeOfFile("rules.txt");
-    printf("%d", d);*/
-
     char r[1000] = { '\0' };
 
     while (fgets(r, 1000, fp)) {
         printf("%s", r);
     }
     fclose(fp);
+
+    int len = sizeOfFile("rules.txt");
+    printf("Total size of rules.txt = %d bytes\n", len);
 
     printf("\nPress any key to return to previous menu...\n");
     getchar();
@@ -161,22 +245,21 @@ void displayRules() {
 }
 
 int sizeOfFile(const char* prompt) {
-    FILE* f = fopen(prompt, "r");
+    FILE* fp = NULL;
+    int len = 0;
 
-    if (f == NULL) {
+    fp = fopen(prompt, "r");
+    if (fp == NULL) {
         fprintf(stderr, "Failed to open file\n");
         exit(EXIT_FAILURE);
     }
 
-    fseek(f, 0, SEEK_END);
-    //printf("%ld", ftell(f));
+    fseek(fp, 0, SEEK_END);
+    len = ftell(fp);
+    fclose(fp);
+    fp = NULL;
 
-    int d = ftell(f);
-
-    fclose(f);
-    f = NULL;
-
-    return d;
+    return len;
 }
 
 void setConsoleSize(int width, int height) {

@@ -262,18 +262,24 @@ int tetrisLevel(TETRIS* tetris) {
     return levels[tetris->level - 1].nsec;
 }
 
-void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs) {
-    TETRIS tetris;
+void tetrisRun(const int boardWidth, const int boardHeight, int hs) {
+    struct timespec tm = { 0, 0 };
 
+    TETRIS tetris;
+    USER* user = allocateUser();
     
     char cmd;
     int count = 0;
 
+    tetrisInitialization(&tetris, boardWidth, boardHeight);
+
+    enterUsername(user);
     user->score = 0;
 
-    tetrisInitialization(&tetris, boardWidth, boardHeight);
-    tetrisNewBlock(&tetris);
+    tm.tv_sec = 0;
+    tm.tv_nsec = 50000000;
 
+    tetrisNewBlock(&tetris);
     while (!tetris.gameover) {
         count++;
         if (count % 100 == 0) {
@@ -289,7 +295,7 @@ void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs) 
         while (_kbhit()) {
             cmd = _getch();
 
-            if (cmd == 'p') {
+            if (cmd == 'p'||cmd == 'P') {
                 tetris.paused = !tetris.paused;
                 if (tetris.paused) {
                     tetrisPrint(&tetris);
@@ -299,16 +305,19 @@ void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs) 
             else if (!tetris.paused) {
                 switch (cmd) {
                 case 'a':
+                case 'A':
                     tetris.blockX--;
                     if (tetrisHittest(&tetris))
                         tetris.blockX++;
                     break;
                 case 'd':
+                case 'D':
                     tetris.blockX++;
                     if (tetrisHittest(&tetris))
                         tetris.blockX--;
                     break;
                 case 's':
+                case 'S':
                     tetrisGravity(&tetris);
                     break;
                 case ' ':
@@ -316,11 +325,20 @@ void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs) 
                     break;
                 }
             }
+
+            tm.tv_nsec = tetrisLevel(&tetris);
+
         }
     }
+
+    /*printf("prije\nuser.score = %d\ntetris.score = %d\n", user->score, tetris.score);
+    fflush(stdout);
     
-    user->score = tetris.score;
+    tetrisPrint(&tetris);
+    printf("poslije\nuser.score = %d\ntetris.score = %d\n", user->score, tetris.score);
+    fflush(stdout);
     printf("GAME OVER %s ! Your score: %d !\n", user->username, user->score);
+    
     if (user->score > hs) {
         hs = user->score;
         printf("CONGRATULATIONS %s ! New high score !\n", user->username);
@@ -328,7 +346,24 @@ void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs) 
     }
     else {
         printf("Better luck next time !\n");
-    }
+    }*/
+
+    
+
+    user->score = tetris.score;
+
+    printf("poslije\nuser.score = %d\ntetris.score = %d\n", user->score, tetris.score);
+
+    printf("GAME OVER %s! Your score: %d\n", user->username, user->score);
+    saveScore(user); // Sačuvaj korisnika u datoteku
+
+
 
     tetrisFree(&tetris);
+    freeUser(user);
+
+    printf("\nPress any key to return to main menu...\n");
+    getchar();
+    getchar();
+
 }

@@ -1,1 +1,3 @@
-0QÄ4ß 0
+helena		100
+petra		200
+grgo		800

@@ -46,4 +46,4 @@ void tetrisFall(TETRIS* tetris, int l);
 void tetrisCheckLines(TETRIS* tetris);
 int tetrisLevel(TETRIS* tetris);
 void tetrisFree(TETRIS* tetris);
-void tetrisRun(USER* user, const int boardWidth, const int boardHeight, int hs);
+void tetrisRun(const int boardWidth, const int boardHeight, int hs);

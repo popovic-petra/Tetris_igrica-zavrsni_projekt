@@ -8,12 +8,15 @@ typedef enum {
 }MENU_MAIN_OPTION;
 
 typedef enum {
+	VIEW,
 	ASCENDING,
 	DESCENDING,
 	SEARCH,
 	DEL,
 	BACK
 }MENU_HIGHSCORE_OPTION;
+
+static void printStars(int count);
 
 void mainMenu();
 void displayMainMenu();
