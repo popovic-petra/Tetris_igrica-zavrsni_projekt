@@ -7,10 +7,10 @@ This project implements a classic Tetris game using the C programming language. 
 ## Screenshots
 
 ### Main Menu
-![Main Menu](Tetris_igrica-zavrsni_projekt/screenshots/main-menu.png)
+![Main Menu](Tetris_igrica-zavrsni_projekt/screenshots/main_menu.png)
 
 ### Gameplay
-![Gameplay](screenshots/game.png)
+![Gameplay](Tetris_igrica-zavrsni_projekt/screenshots/game.png)
 
 ### Gameover
 ![Gameover](screenshots/game_over.png)
