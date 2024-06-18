@@ -4,6 +4,23 @@
 
 This project implements a classic Tetris game using the C programming language. Tetris is a tile-matching puzzle video game originally designed and programmed by Alexey Pajitnov. The objective is to manipulate tetrominoes (geometric shapes composed of four square blocks each) to create complete lines on a grid, which then disappear. The goal is to prevent the tetrominoes from stacking up to the top of the playing field.
 
+## Screenshots
+
+### Main Menu
+![Main Menu](screenshots/main-menu.png)
+
+### Gameplay
+![Gameplay](screenshots/game.png)
+
+### Gameover
+![Gameover](screenshots/game_over.png)
+
+### Highscores
+![Highscores](screenshots/highscore_menu.png)
+
+### Highscores sorted in descending order
+![Highscores](screenshots/highscore_sorted_desc.png)
+
 ## Features
 
 - **Classic Tetris Gameplay**: Includes standard Tetris rules, block rotations, and movement.
