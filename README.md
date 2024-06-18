@@ -13,13 +13,13 @@ This project implements a classic Tetris game using the C programming language. 
 ![Gameplay](Tetris_igrica-zavrsni_projekt/screenshots/game.png)
 
 ### Gameover
-![Gameover](screenshots/game_over.png)
+![Gameover](Tetris_igrica-zavrsni_projekt/screenshots/game_over.png)
 
-### Highscores
-![Highscores](screenshots/highscore_menu.png)
+### Highscore menagment menu
+![Highscores](Tetris_igrica-zavrsni_projekt/screenshots/highscore_menu.png)
 
 ### Highscores sorted in descending order
-![Highscores](screenshots/highscore_sorted_desc.png)
+![Highscores](Tetris_igrica-zavrsni_projekt/screenshots/highscore_sorted_desc.png)
 
 ## Features
 
