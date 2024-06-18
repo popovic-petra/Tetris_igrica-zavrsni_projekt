@@ -1,7 +1,7 @@
 #pragma once
 
 #define MAX_USERNAME_LENGTH 100
-#define MAX_PLAYERS 10
+#define MAX_PLAYERS 100
 
 typedef struct user{
     char username[MAX_USERNAME_LENGTH];

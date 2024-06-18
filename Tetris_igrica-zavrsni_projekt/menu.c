@@ -112,7 +112,9 @@ void displayHighscoreMenu() {
             getchar();
             getchar();
             break;
+
         case ASCENDING:
+            
             system("cls");
             printStars(51);
             printf("*                 SORTED ASCENDING                *\n");
@@ -133,6 +135,7 @@ void displayHighscoreMenu() {
             break;
 
         case DESCENDING:
+            
             system("cls");
             printStars(51);
             printf("*                 SORTED DESCENDING               *\n");
@@ -150,6 +153,12 @@ void displayHighscoreMenu() {
 
         case SEARCH:
             system("cls");
+
+            /*Sortiranje niza korisnika pomoću qsort je neophodno za ispravno funkcioniranje bsearch.*/
+
+            // users - niz korisnika koji treba sortirati
+            // count - broj korisnika u nizu
+            // sizeof(USER) - velicina pojedinog elementa u nizu
             qsort(users, count, sizeof(USER), compareUsernames);
 
             char searchName[MAX_USERNAME_LENGTH + 1];
@@ -158,11 +167,18 @@ void displayHighscoreMenu() {
             fgets(searchName, MAX_USERNAME_LENGTH, stdin);
             removeNewline(searchName);
 
-            USER key;
+            USER key;       // kljuc za pretragu
             strncpy(key.username, searchName, MAX_USERNAME_LENGTH);
 
             /*22. Pretraživanje – preporuka koristiti ugrađenu bsearch() funkciju*/
 
+            /*bsearch zahtijeva sortirani niz jer koristi binarno pretraživanje, 
+            što omogućuje brzu pretragu korisničkog imena.*/
+
+            // &key - pokazivac na kljuc koji se trazi
+            // users - niz korisnika unutar kojeg se trazi
+            // count - broj korisnika u nizu
+            // bsearch vraca pokazivac na pronadjenog korisnika ili NULL ako nije pronadjen 
             USER* found = bsearch(&key, users, count, sizeof(USER), compareUsernames);
             
             if (found) {
@@ -223,11 +239,16 @@ int getMenuChoice(int maxOption) {
     return choice;
 }
 
-
+// poziva getMenuChoice koja prihvaća korisnički unos i vraća cijeli broj (int) koji 
+// predstavlja odabranu opciju.
+// taj cijeli broj se zatim pretvara u MENU_MAIN_OPTION tip pomoću type castinga
 MENU_MAIN_OPTION getMainMenuOption() {
     return (MENU_MAIN_OPTION)getMenuChoice(EXIT);
 }
 
+// poziva getMenuChoice koja prihvaća korisnički unos i vraća cijeli broj (int) koji 
+// predstavlja odabranu opciju.
+// taj cijeli broj se zatim pretvara u MENU_HIGHSCORE_OPTION tip pomoću type castinga
 MENU_HIGHSCORE_OPTION getHighscoreMenuOption() {
     return (MENU_HIGHSCORE_OPTION)getMenuChoice(BACK);
 }

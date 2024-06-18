@@ -7,8 +7,9 @@
 /*10. Generalno upotreba pokazivača tamo gdje su potrebni*/
 /*14. Koristiti dinamičko zauzimanje memorije za bilo koji tip podatka, osobito za složene tipove podataka*/
 
+// dinamicki alociramo memoriju za USER struct i vraca pokazivac na tu struct
 USER* allocateUser() {
-    USER* user = (USER*)calloc(1, sizeof(USER));
+    USER* user = (USER*)calloc(1, sizeof(USER));    // koristi calloc za alokaciju kako bi svi clanoci bili init na nulu 
     if (user == NULL) {
         fprintf(stderr, "Error allocating memory\n");
         exit(EXIT_FAILURE);
@@ -31,8 +32,11 @@ void enterUsername(USER* user) {
     removeNewline(user->username);
 }
 
+// uklanja znak novog reda \n s kraja stringa, ako postoji
+// char* str je pokazivac na string iz kojeg se treba ukloniti novi red
 void removeNewline(char* str) {
-    size_t len = strlen(str);
+    // provjerava duljinu stringa i zamjenjuje posljednji znak s \0
+    unsigned int len = strlen(str);
     if (len > 0 && str[len - 1] == '\n') {
         str[len - 1] = '\0';
     }
@@ -54,7 +58,7 @@ void createAndRenameFiles(const char* prompt) {
         // Create file if it doesn't exist
         file = fopen("generic.txt", "w");
         if (file == NULL) {
-            perror("Error creating generic file");
+            perror("Error creating generic file");  // perror vraca opis zadnje greske koja se dogodila
             exit(EXIT_FAILURE);
         }
         fclose(file);
@@ -80,6 +84,7 @@ void cleanupFiles(const char* prompt) {
 /*17. Datoteke, koristiti tekstualnu ili binarnu, provjera pokazivača i zatvaranje datoteke*/
 /*20. Upravljati s pogreškama, errno, perror(), strerror(), feof(), ferror()*/
 
+// sprema korisnicko ime i rezultat u datoteku
 void saveScore(const USER* user, const char* prompt) {
     FILE* file = fopen(prompt, "a");
     if (file == NULL) {
@@ -91,6 +96,7 @@ void saveScore(const USER* user, const char* prompt) {
     fclose(file);
 }
 
+// ucitava podatke iz datoteke i pohranjuje ih u niz scores
 int loadScore(USER scores[], int maxUsers, const char* prompt) {
     if (scores == NULL || prompt == NULL || maxUsers <= 0) {
         fprintf(stderr, "Invalid parameters for loadScore\n");
@@ -103,6 +109,7 @@ int loadScore(USER scores[], int maxUsers, const char* prompt) {
         exit(EXIT_FAILURE);
     }
 
+    // broj uspjesno ucitanih rezultata
     int count = 0;
     while (count < maxUsers && fscanf(fp, "%s\t\t%d\n", scores[count].username, &scores[count].score) == 2) {
         count++;    
@@ -130,10 +137,16 @@ int compareAsc(const void* a, const void* b) {
     return 0;
 }
 
+// funkcija koja implementira particioniranje za quick sort
+// int low/high - pocetni/zavrsni indeks za particioniranje, 
+// int (*compare)(const void*, const void*) - pokazivac na funkciju za usporedbu
+
 static int partition(USER* users, int low, int high, int (*compare)(const void*, const void*)) {
+    // koristi pivot element za particioniranje niza
     USER pivot = users[high];
     int i = low - 1;
 
+    // pomjera elemente tako da su manji od pivot elementa s lijeve strane, a veći s desne
     for (int j = low; j < high; j++) {
         if (compare(&users[j], &pivot) < 0) {
             i++;
@@ -147,19 +160,25 @@ static int partition(USER* users, int low, int high, int (*compare)(const void*,
     users[i + 1] = users[high];
     users[high] = temp;
 
+    // vraca indeks particioniranja
     return i + 1;
 }
 
+// sortira niz users koristeći quick sort algoritam
+// USER* users - niz rezultata
 void quickSort(USER* users, int low, int high, int (*compare)(const void*, const void*)) {
     if (low < high) {
         int pi = partition(users, low, high, compare);
+        // rekurzivno dijeli niz pomocu partition funkcije i sortira podnizove
         quickSort(users, low, pi - 1, compare);
         quickSort(users, pi + 1, high, compare);
     }
 }
 
+// uspoređuje korisnička imena
 int compareUsernames(const void* a, const void* b) {
-    return strcmp(((USER*)a)->username, ((USER*)b)->username);
+    // koristi strcmp za usporedbu
+    return strcmp(((USER*)a)->username, ((USER*)b)->username); // pozitivna vrijednost ako je prvo ime vece, negativna ako je manje, 0 ako su jednaki
 }
 
 void deleteHighscores(const char* prompt) {

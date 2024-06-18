@@ -65,8 +65,9 @@ LEVEL levels[] = {
 /*11. Generalno upotreba struktura i funkcija*/
 /*15. Koristiti funkcije malloc(), calloc(), realloc(), free()*/
 
+// inicijalizacija igre postavljanjem, dimenzija ploce, trenutnog levela, stanja igre
 void tetrisInitialization(TETRIS* tetris, const int boardWidth, const int boardHeight) {
-    
+    // provjeravamo validnost ulaznog parametra
     if (tetris == NULL || boardWidth <= 0 || boardHeight <= 0) {
         fprintf(stderr, "Invalid parameters for tetrisInitialization\n");
         return;
@@ -79,12 +80,14 @@ void tetrisInitialization(TETRIS* tetris, const int boardWidth, const int boardH
     tetris->width = boardWidth;
     tetris->height = boardHeight;
 
+    // alokacija za stupce
     tetris->board = (char**)malloc(boardWidth * sizeof(char*));
     if (tetris->board == NULL) {
         fprintf(stderr, "Memory allocation failed for board columns\n");
         exit(EXIT_FAILURE);
     }
 
+    // za svaki red alocira memoriju i inicijalizira prazno polje
     for (int x = 0; x < boardWidth; x++) {
         tetris->board[x] = (char*)malloc(boardHeight * sizeof(char));
         if (tetris->board[x] == NULL) {
@@ -103,6 +106,7 @@ void tetrisInitialization(TETRIS* tetris, const int boardWidth, const int boardH
 
 /*16. Sigurno brisanje memorije koja je dinamički zauzeta, anuliranje memorijskog prostora, provjera pokazivača*/
 
+// oslobađa memoriju koja je bila zauzeta za ploču igre.
 void tetrisFree(TETRIS* tetris) {
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisFree\n");
@@ -115,6 +119,7 @@ void tetrisFree(TETRIS* tetris) {
     free(tetris->board);
 }
 
+// ispisuje trenutno stanje igre na konzoli, uključujući ploču, trenutni level i rezultat
 void tetrisPrint(TETRIS* tetris) {
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisPrint\n");
@@ -127,11 +132,14 @@ void tetrisPrint(TETRIS* tetris) {
         printf("\t\t    *** [ PAUSE ] ***");
     }
     printf("\n\t\t");
+
+    // ispisuje okvir ploce
     for (int x = 0; x < 2 * tetris->width + 4; x++) {
         printf("=");
     }
     printf("\n");
 
+    // prikazuje plocu s trenutnim blokom koji pada
     for (int y = 0; y < tetris->height; y++) {
         printf("\t\t<!");
         for (int x = 0; x < tetris->width; x++) {
@@ -154,6 +162,7 @@ void tetrisPrint(TETRIS* tetris) {
     printf("\t\tLEVEL: %d\n\t\tSCORE: %d\n", tetris->level, tetris->score);
 }
 
+// provjerava sudar bloka s rubom ploce ili drugim blokom 
 int tetrisHittest(TETRIS* tetris) {
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisHittest\n");
@@ -167,33 +176,37 @@ int tetrisHittest(TETRIS* tetris) {
             absX = tetris->blockX + x;
             absY = tetris->blockY + y;
             if (!(absX >= 0 && absX < tetris->width)) {
-                return 1;
+                return 1;       // vraca 1 ako dolazi do sudara s plocom
             }
             if (block.data[y][x] != ' ') {
                 if ((absY >= tetris->height) ||
                     (absX >= 0 && absX < tetris->width && absY >= 0 && tetris->board[absX][absY] != ' ')) {
-                    return 1;
+                    return 1;   // vraca 1 ako dolazi do sudara s drugim blokom
                 }
             }
         }
     }
-    return 0;
+    return 0;   // ako nema usdara vraca 0
 }
 
+// generira novi blok i postavlja ga na vrh ploce
 void tetrisNewBlock(TETRIS* tetris) {
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisNewBlock\n");
         return;
     }
 
+    // nasumicno se bira blok iz strukture blokova 
     tetris->current = blocks[rand() % TETRIS_PIECES];
     tetris->blockX = (tetris->width / 2) - (tetris->current.width / 2);
     tetris->blockY = 0;
+    // provjera sudara nakon postavljanja bloka
     if (tetrisHittest(tetris)) {
         tetris->gameover = 1;
     }
 }
 
+// ispisuje trenutni blok na plocu
 void tetrisPrintBlock(TETRIS* tetris) {
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisPrintBlock\n");
@@ -210,6 +223,7 @@ void tetrisPrintBlock(TETRIS* tetris) {
     }
 }
 
+// rotira trenutni blok u smjeru kazaljke na satu
 void tetrisRotate(TETRIS* tetris) {
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisRotate\n");
@@ -219,6 +233,8 @@ void tetrisRotate(TETRIS* tetris) {
     int x, y;
     TETROMINO block = tetris->current;
     TETROMINO original = block;
+
+    
     block.width = original.height;
     block.height = original.width;
     for (x = 0; x < original.width; x++) {
@@ -231,6 +247,8 @@ void tetrisRotate(TETRIS* tetris) {
     tetris->blockX -= (block.width - original.width) / 2;
     tetris->blockY -= (block.height - original.height) / 2;
     tetris->current = block;
+
+    // ako rotacija uzrokuje sudar, vraca se blok u pocetni polozaj
     if (tetrisHittest(tetris)) {
         tetris->current = original;
         tetris->blockX = x;
@@ -238,47 +256,51 @@ void tetrisRotate(TETRIS* tetris) {
     }
 }
 
+// pomjera trenutni blok jedan za jedan red dolje 
 void tetrisGravity(TETRIS* tetris) {
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisGravity\n");
         return;
     }
     
+    // pomjera blok za jedan red dolje i provjerava sudar
     tetris->blockY++;
-    if (tetrisHittest(tetris)) {
+    if (tetrisHittest(tetris)) {        // ako dolazi do sudara, blok se vraca na prethodnu poziciju i postaje dio ploce
         tetris->blockY--;
         tetrisPrintBlock(tetris);
         tetrisNewBlock(tetris);
     }
 }
 
+// pomjera sve redove iznad linije l za jedan red dolje
+// int l je linija koja se brise
 void tetrisFall(TETRIS* tetris, int l) {
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisFall\n");
         return;
     }
     
+    // pomjera sve redove iznad l za red dolje
     int x, y;
     for (y = l; y > 0; y--) {
         for (x = 0; x < tetris->width; x++) {
             tetris->board[x][y] = tetris->board[x][y - 1];
         }
     }
+    // postavlja gornji red na prazno
     for (x = 0; x < tetris->width; x++) {
         tetris->board[x][0] = ' ';
     }
 }
 
-void tetrisCheckLines(TETRIS* tetris) {
-    if (tetris == NULL) {
-        fprintf(stderr, "Invalid parameter for tetrisLevel\n");
-        return -1; // Return an invalid level
-    }
-    
+// provjerava i brise pune linije na ploci te azurira rezultat
+void tetrisCheckLines(TETRIS* tetris) {  
     if (tetris == NULL) {
         fprintf(stderr, "Invalid parameter for tetrisCheckLines\n");
         return;
     }
+    
+    // provjerava svaku liniju od dna prema vrhu
     
     int x, y, full;
     int linesCleared = 0;
@@ -289,6 +311,7 @@ void tetrisCheckLines(TETRIS* tetris) {
                 full = 0;
             }
         }
+        // ako je linija puna, brise je i pomjera sve linije iznad prema dolje
         if (full) {
             linesCleared++;
             tetrisFall(tetris, y);
@@ -313,7 +336,13 @@ void tetrisCheckLines(TETRIS* tetris) {
     tetris->score += score;
 }
 
+// vraca trenutno vrijeme padanja blokova u nanosec, bazirano na levelu 
 int tetrisLevel(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisLevel\n");
+        return -1; // Return an invalid level
+    }
+
     for (int i = 0; i < TETRIS_LEVELS; i++) {
         if (tetris->score >= levels[i].score) {
             tetris->level = i + 1;
@@ -323,6 +352,8 @@ int tetrisLevel(TETRIS* tetris) {
     return levels[tetris->level - 1].nsec;
 }
 
+// glavna funkcija koja pokrece igru
+// Postavlja igru, upravlja korisničkim unosom, ažurira stanje igre, i prikazuje trenutnu situaciju na ploči sve dok igra ne završi.
 void tetrisRun(const int boardWidth, const int boardHeight, int hs) {
     if (boardWidth <= 0 || boardHeight <= 0) {
         fprintf(stderr, "Invalid board dimensions for tetrisRun\n");
