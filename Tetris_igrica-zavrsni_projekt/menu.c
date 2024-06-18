@@ -6,6 +6,9 @@
 #include "score.h"
 #include "tetris.h"
 
+/*4. Imenovanje identifikatora (varijabli, konstanti, polja, funkcija, pokazivača…)*/
+/*5. Primjena ključne riječi static za globalne i lokalne varijable*/
+
 static void printStars(int count) {
     for (int i = 0; i < count; i++) {
         printf("*");
@@ -47,6 +50,9 @@ static void highscoreMenu() {
     printStars(51);
 }
 
+/*1. Odabir konkretnih primitivnih tipova podataka za rad s cjelobrojnim i realnim konstantama*/
+/*9. Izbornik/podizbornici*/
+
 void displayMainMenu() {
     
     int showMainMenu = 1;
@@ -64,7 +70,7 @@ void displayMainMenu() {
             break;
         case RULES:
             system("cls");
-            displayRules();
+            displayRules("rules.txt");
             break;
         case HIGHSCORE:
             system("cls");
@@ -87,7 +93,7 @@ void displayHighscoreMenu() {
         int choice = getHighscoreMenuOption(BACK);
 
         USER users[MAX_PLAYERS] = { '\0' };
-        int count = loadScore(users, MAX_PLAYERS);
+        int count = loadScore(users, MAX_PLAYERS, "scores.txt");
 
         char check;
 
@@ -111,7 +117,12 @@ void displayHighscoreMenu() {
             printStars(51);
             printf("*                 SORTED ASCENDING                *\n");
             printStars(51);
-            qsort(users, count, sizeof(USER), compareAsc);
+            
+            /*24. Pokazivače na funkcije je najlakše koristiti upotrebom funkcije qsort() ili bsearch()*/
+            
+            //qsort(users, count, sizeof(USER), compareAsc);
+            quickSort(users, 0, count - 1, compareAsc);
+
             printf("\tUSERNAME\t\t\SCORE\n\n");
             for (int i = 0; i < count; i++) {
                 printf("\t%-16s\t%d\n", users[i].username, users[i].score);
@@ -126,7 +137,8 @@ void displayHighscoreMenu() {
             printStars(51);
             printf("*                 SORTED DESCENDING               *\n");
             printStars(51);
-            qsort(users, count, sizeof(USER), compareDesc);
+            //qsort(users, count, sizeof(USER), compareDesc);
+            quickSort(users, 0, count - 1, compareDesc);
             printf("\tUSERNAME\t\t\SCORE\n\n");
             for (int i = 0; i < count; i++) {
                 printf("\t%-16s\t%d\n", users[i].username, users[i].score);
@@ -134,11 +146,12 @@ void displayHighscoreMenu() {
             printf("\nPress ENTER to return to previous menu...\n");
             getchar();
             getchar();
+            break;
 
         case SEARCH:
             system("cls");
             qsort(users, count, sizeof(USER), compareUsernames);
-            
+
             char searchName[MAX_USERNAME_LENGTH + 1];
             printf("Enter username to search\n>>> ");
             getchar();
@@ -147,6 +160,8 @@ void displayHighscoreMenu() {
 
             USER key;
             strncpy(key.username, searchName, MAX_USERNAME_LENGTH);
+
+            /*22. Pretraživanje – preporuka koristiti ugrađenu bsearch() funkciju*/
 
             USER* found = bsearch(&key, users, count, sizeof(USER), compareUsernames);
             
@@ -165,7 +180,6 @@ void displayHighscoreMenu() {
                 printStars(51);
                 printf("\nPress ENTER to return to previous menu...\n");
                 getchar();
-                getchar();
             }
 
             break;
@@ -175,14 +189,14 @@ void displayHighscoreMenu() {
             getchar();
             
             if (check == 'y' || check == 'Y') {
-                deleteHighscores();
-                printf("File was successfully deleted.\n");
+                deleteHighscores("scores.txt");
+                printf("Scores were successfully deleted.\n");
             }
             else if (check == 'n' || check == 'N') {
-                printf("File clearing was successfully canceled.\n");
+                printf("Score clearing was successfully canceled.\n");
             }
             else {
-                printf("Invalid input. File clearing canceled.\n");
+                printf("Invalid input. Score clearing canceled.\n");
             }
             printf("\nPress ENTER to return to previous menu...\n");
             getchar();              
@@ -216,50 +230,6 @@ MENU_MAIN_OPTION getMainMenuOption() {
 
 MENU_HIGHSCORE_OPTION getHighscoreMenuOption() {
     return (MENU_HIGHSCORE_OPTION)getMenuChoice(BACK);
-}
-
-
-void displayRules() {
-
-    FILE* fp = NULL;
-    fp = fopen("rules.txt", "r");
-    if (fp == NULL) {
-        perror("Error opening file");
-        exit(EXIT_FAILURE);
-    }
-
-    char r[1000] = { '\0' };
-
-    while (fgets(r, 1000, fp)) {
-        printf("%s", r);
-    }
-    fclose(fp);
-
-    int len = sizeOfFile("rules.txt");
-    printf("Total size of rules.txt = %d bytes\n", len);
-
-    printf("\nPress any key to return to previous menu...\n");
-    getchar();
-    getchar();
-
-}
-
-int sizeOfFile(const char* prompt) {
-    FILE* fp = NULL;
-    int len = 0;
-
-    fp = fopen(prompt, "r");
-    if (fp == NULL) {
-        fprintf(stderr, "Failed to open file\n");
-        exit(EXIT_FAILURE);
-    }
-
-    fseek(fp, 0, SEEK_END);
-    len = ftell(fp);
-    fclose(fp);
-    fp = NULL;
-
-    return len;
 }
 
 void setConsoleSize(int width, int height) {

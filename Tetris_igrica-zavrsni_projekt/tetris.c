@@ -62,7 +62,16 @@ LEVEL levels[] = {
 		100000000},
 };
 
+/*11. Generalno upotreba struktura i funkcija*/
+/*15. Koristiti funkcije malloc(), calloc(), realloc(), free()*/
+
 void tetrisInitialization(TETRIS* tetris, const int boardWidth, const int boardHeight) {
+    
+    if (tetris == NULL || boardWidth <= 0 || boardHeight <= 0) {
+        fprintf(stderr, "Invalid parameters for tetrisInitialization\n");
+        return;
+    }
+    
     tetris->level = 1;
     tetris->score = 0;
     tetris->gameover = 0;
@@ -92,7 +101,14 @@ void tetrisInitialization(TETRIS* tetris, const int boardWidth, const int boardH
     }
 }
 
+/*16. Sigurno brisanje memorije koja je dinamički zauzeta, anuliranje memorijskog prostora, provjera pokazivača*/
+
 void tetrisFree(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisFree\n");
+        return;
+    }
+    
     for (int x = 0; x < tetris->width; x++) {
         free(tetris->board[x]);
     }
@@ -100,6 +116,11 @@ void tetrisFree(TETRIS* tetris) {
 }
 
 void tetrisPrint(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisPrint\n");
+        return;
+    }
+    
     system("cls");
     printf("\n");
     if (tetris->paused) {
@@ -134,6 +155,11 @@ void tetrisPrint(TETRIS* tetris) {
 }
 
 int tetrisHittest(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisHittest\n");
+        return 1; // Assume hit if tetris is NULL
+    }
+    
     int absX, absY;
     TETROMINO block = tetris->current;
     for (int x = 0; x < block.width; x++) {
@@ -155,6 +181,11 @@ int tetrisHittest(TETRIS* tetris) {
 }
 
 void tetrisNewBlock(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisNewBlock\n");
+        return;
+    }
+
     tetris->current = blocks[rand() % TETRIS_PIECES];
     tetris->blockX = (tetris->width / 2) - (tetris->current.width / 2);
     tetris->blockY = 0;
@@ -164,6 +195,11 @@ void tetrisNewBlock(TETRIS* tetris) {
 }
 
 void tetrisPrintBlock(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisPrintBlock\n");
+        return;
+    }
+    
     TETROMINO block = tetris->current;
     for (int x = 0; x < block.width; x++) {
         for (int y = 0; y < block.height; y++) {
@@ -175,6 +211,11 @@ void tetrisPrintBlock(TETRIS* tetris) {
 }
 
 void tetrisRotate(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisRotate\n");
+        return;
+    }
+    
     int x, y;
     TETROMINO block = tetris->current;
     TETROMINO original = block;
@@ -198,6 +239,11 @@ void tetrisRotate(TETRIS* tetris) {
 }
 
 void tetrisGravity(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisGravity\n");
+        return;
+    }
+    
     tetris->blockY++;
     if (tetrisHittest(tetris)) {
         tetris->blockY--;
@@ -207,6 +253,11 @@ void tetrisGravity(TETRIS* tetris) {
 }
 
 void tetrisFall(TETRIS* tetris, int l) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisFall\n");
+        return;
+    }
+    
     int x, y;
     for (y = l; y > 0; y--) {
         for (x = 0; x < tetris->width; x++) {
@@ -219,6 +270,16 @@ void tetrisFall(TETRIS* tetris, int l) {
 }
 
 void tetrisCheckLines(TETRIS* tetris) {
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisLevel\n");
+        return -1; // Return an invalid level
+    }
+    
+    if (tetris == NULL) {
+        fprintf(stderr, "Invalid parameter for tetrisCheckLines\n");
+        return;
+    }
+    
     int x, y, full;
     int linesCleared = 0;
     for (y = tetris->height - 1; y >= 0; y--) {
@@ -263,6 +324,11 @@ int tetrisLevel(TETRIS* tetris) {
 }
 
 void tetrisRun(const int boardWidth, const int boardHeight, int hs) {
+    if (boardWidth <= 0 || boardHeight <= 0) {
+        fprintf(stderr, "Invalid board dimensions for tetrisRun\n");
+        return;
+    }
+    
     struct timespec tm = { 0, 0 };
 
     TETRIS tetris;
@@ -331,39 +397,24 @@ void tetrisRun(const int boardWidth, const int boardHeight, int hs) {
         }
     }
 
-    /*printf("prije\nuser.score = %d\ntetris.score = %d\n", user->score, tetris.score);
-    fflush(stdout);
-    
-    tetrisPrint(&tetris);
-    printf("poslije\nuser.score = %d\ntetris.score = %d\n", user->score, tetris.score);
-    fflush(stdout);
-    printf("GAME OVER %s ! Your score: %d !\n", user->username, user->score);
-    
-    if (user->score > hs) {
-        hs = user->score;
-        printf("CONGRATULATIONS %s ! New high score !\n", user->username);
-        saveScore(&user);
-    }
-    else {
-        printf("Better luck next time !\n");
-    }*/
-
     
 
     user->score = tetris.score;
 
-    printf("poslije\nuser.score = %d\ntetris.score = %d\n", user->score, tetris.score);
-
     printf("GAME OVER %s! Your score: %d\n", user->username, user->score);
-    saveScore(user); // Sačuvaj korisnika u datoteku
-
-
+    
+    if (user->score > hs) {
+        hs = user->score;
+        printf("Congratulations %s! New high score!\n", user->username);
+        saveScore(user, "scores.txt"); // Save username and highscore to file
+    }
+    else {
+        printf("Better luck next time!\n");
+    }
 
     tetrisFree(&tetris);
     freeUser(user);
 
-    printf("\nPress any key to return to main menu...\n");
+    printf("\nPress ENTER to return to main menu...\n");
     getchar();
-    getchar();
-
 }

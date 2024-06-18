@@ -1,3 +1,5 @@
-helena		100
-petra		200
-grgo		800
+petra		100
+admin		300
+helena		9800
+lucija		12300
+Katarina	7000

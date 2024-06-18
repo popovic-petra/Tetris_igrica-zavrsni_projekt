@@ -3,7 +3,7 @@
 #define MAX_USERNAME_LENGTH 100
 #define MAX_PLAYERS 10
 
-typedef struct {
+typedef struct user{
     char username[MAX_USERNAME_LENGTH];
     int score;
 }USER;
@@ -13,23 +13,21 @@ USER* allocateUser();
 void freeUser(USER* user);
 void removeNewline(char* str);
 
-void saveScore(const USER* user);
-int loadScore(USER scores[], int maxUsers);
-//static void saveScoresToFile(const USER* users, int count);
-//static void handleFileError(FILE* file);
-//
-//static void sortUsersDesc(USER* users, int count);
-//static void sortUsersAsc(USER* users, int count);
+void createAndRenameFiles(const char* prompt);
+void cleanupFiles(const char* prompt);
+
+void saveScore(const USER* user, const char* prompt);
+int loadScore(USER scores[], const int maxUsers, const char* prompt);
+
 int compareAsc(const void* a, const void* b);
 int compareDesc(const void* a, const void* b);
-//void displayScoresAscending();
-//void displayScoresDescending();
-
-//void getInputUsername(char* username, int size);
-//int searchUser(const USER* users, int count, const char* username);
+static int partition(USER* users, int low, int high, int (*compare)(const void*, const void*));
+void quickSort(USER* users, int low, int high, int (*compare)(const void*, const void*));
 int compareUsernames(const void* a, const void* b);
-//void searchUsername(const USER* users, int count, const char* username);
-//
-void deleteHighscores();
+
+void deleteHighscores(const char* prompt);
 char doubleCheck();
 
+void displayRules(const char* prompt);
+int sizeOfFile(const char* prompt);
+void setConsoleSize(int width, int height);
